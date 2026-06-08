@@ -11,7 +11,7 @@ describe('UserService', () => {
     { _id: '1', name: 'A', email: 'a@test.com' },
     { _id: '2', name: 'B', email: 'b@test.com' },
   ];
-
+  
   const mockUserModel = {
     find: jest.fn().mockReturnThis(),       
     select: jest.fn().mockReturnThis(),     

@@ -33,16 +33,16 @@ export class UserResolver {
 
   @Mutation('register')
   register(@Args('input') input: CreateUserInput) {
-    return this.userService.register(input); 
+    return this.authService.register(input); 
   }
 
   @Mutation('login')
-  async login(@Args('input') input: LoginUserInput) {
-    return this.authService.login(input);
+  async login(@Args('input') input: LoginUserInput, @Context() context: any) {
+    return this.authService.login(input,context);
   }
 
   @Mutation('updateUser')
-   @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   updateUser(
     @Args('id') id: string,
     @Args('input') input: UpdateUserInput,

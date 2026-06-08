@@ -27,10 +27,17 @@ export class User {
       linkedInId: String,
     },
   })
+  
   oauth?: {
     googleId?: string;
     linkedInId?: string;
   };
+
+  @Prop({ default: false })
+  isLogin?: boolean;
+
+  @Prop({ type: String, default:'LOCAL', enum: ['LOCAL', 'GOOGLE', 'LINKEDIN'] })
+  authType!: string;
 
   @Prop({
     type: String,

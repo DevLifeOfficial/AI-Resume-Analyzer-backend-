@@ -27,25 +27,29 @@ export class AuthService {
     return user;
   }
 
-  async login(input: LoginUserInput) {
+  async login(input: LoginUserInput, context: any) {
     const user = await this.validateUser(input.email, input.password);
 
     const payload = {
       sub: user._id.toString(),
       email: user.email,
       role: user.role,
+      isLogin: true,
+      authType: user.authType,
     };
 
-    return {
-      token: this.jwtService.sign(payload),
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
-    };
+    const token = this.jwtService.sign(payload);
+
+    context.req.cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return { user: { id: user._id, email: user.email, role: user.role }, token };
   }
+  
 
   async register(input: CreateUserInput) {
     const token = await this.userService.register(input);

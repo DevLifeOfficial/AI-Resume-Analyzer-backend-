@@ -6,6 +6,8 @@ type User {
   role: String!
   plan: String!
   oauth: OAuthInfo
+  isLogin: Boolean
+  authType: String
   subscription: SubscriptionInfo
   usage: UsageInfo
   settings: UserSettings

@@ -19,11 +19,11 @@ export class UserService {
   ) {}
 
   async register(input: CreateUserInput): Promise<{
-    token: string;
     user: Partial<UserDocument>;
   }> {
     const existingUser = await this.userModel.findOne({ email: input.email });
     if (existingUser) {
+      
       throw new BadRequestException('User with this email already exists');
     }
 
@@ -44,17 +44,7 @@ export class UserService {
       },
     });
 
-    // Generate JWT
-    const payload = {
-      sub: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    };
-
-    const token = this.jwtService.sign(payload);
-
     return {
-      token,
       user: {
         id: user._id.toString(),
         email: user.email,

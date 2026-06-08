@@ -75,7 +75,7 @@ const logger = new Logger('AppModule');
           typePaths: ['./**/*.graphql'],
           playground: configService.get('NODE_ENV') !== 'production',
           introspection: configService.get('NODE_ENV') !== 'production',
-          context: ({ req }) => ({ req }),
+          context: ({ req, res }) => ({ req, res }),
           resolvers: { Upload: GraphQLUpload },  // register inline scalar
           formatError: (error) => {
             logger.error('GraphQL Error:', error.message);
