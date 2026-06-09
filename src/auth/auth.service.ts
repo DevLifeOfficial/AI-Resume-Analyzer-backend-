@@ -47,12 +47,57 @@ export class AuthService {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { user: { id: user._id, email: user.email, role: user.role }, token };
+    return { user: { id: user._id, email: user.email, role: user.role } };
   }
   
 
   async register(input: CreateUserInput) {
-    const token = await this.userService.register(input);
-    return token;
+    const response = await this.userService.register(input);
+    return response;
+  }
+
+  async googleLogin(user: any, context: any) {
+    let existingUser = await this.userService.findByEmail(user.email);
+    let token: string = '';
+
+    if (!existingUser) {
+      const createUserInput: CreateUserInput = {
+        email: user.email,
+        name: user.name,
+        authType: 'GOOGLE',
+        oAuth: {
+          googleId: user.googleId,
+        },
+        password: Math.random().toString(36).slice(-8), 
+      };
+
+      const registerResponse = await this.userService.register(createUserInput);
+      existingUser = await this.userService.findByEmail(user.email);
+
+      if (existingUser) {
+        const payload = {
+          sub: existingUser._id.toString(),
+          email: existingUser.email,
+          role: existingUser.role,
+          isLogin: true,
+          authType: existingUser.authType,
+        };
+        token = this.jwtService.sign(payload);
+      }
+    } else {
+      const payload = {
+        sub: existingUser._id.toString(),
+        email: existingUser.email,
+        role: existingUser.role,
+        isLogin: true,
+        authType: existingUser.authType,
+      };
+      token = this.jwtService.sign(payload);
+    }
+
+    return {
+      token,
+      existingUser
+    };
   }
 }

@@ -5,7 +5,7 @@ import { User, UserSchema } from './user.schema';
 import { UserService } from './user.service';
 import { UserResolver } from './user.resolver';
 import { AuthService } from '../auth/auth.service';
-import { JwtStrategy } from '../auth/jwt.strategy';
+import { JwtStrategy } from '../auth/strategy/jwt.strategy';
 
 @Module({
   imports: [

@@ -4,7 +4,8 @@ import { UserService } from './user.service';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { CreateUserInput, LoginUserInput, UpdateUserInput } from 'src/generated/models';
-import { UseGuards } from '@nestjs/common';
+import { Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 @Resolver('User')
 export class UserResolver {
@@ -39,6 +40,14 @@ export class UserResolver {
   @Mutation('login')
   async login(@Args('input') input: LoginUserInput, @Context() context: any) {
     return this.authService.login(input,context);
+  }
+
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {
+    // Initiates Google OAuth2 login flow
+    
+
   }
 
   @Mutation('updateUser')

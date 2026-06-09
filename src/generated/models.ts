@@ -59,6 +59,8 @@ export type CreateUserInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
+  authType?: InputMaybe<Scalars['String']['input']>;
+  oAuth?: InputMaybe<OAuthInfo>;
 };
 
 export type LoginUserInput = {

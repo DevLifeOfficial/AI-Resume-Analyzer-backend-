@@ -17,14 +17,17 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: true, // Reflects request origin
+    origin: [
+      'http://localhost:3000',
+      'https://resume-analyser-frontend.vercel.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
   app.use(cookieParser());
 
-  const port = configService.get<number>('PORT') || 3000;
+  const port = configService.get<number>('PORT') || 3001;
 
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}/graphql`);
