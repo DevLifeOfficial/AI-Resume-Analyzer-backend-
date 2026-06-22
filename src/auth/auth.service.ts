@@ -40,7 +40,7 @@ export class AuthService {
 
     const token = this.jwtService.sign(payload);
 
-    context.req.cookie('access_token', token, {
+    context.res.cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
@@ -56,48 +56,101 @@ export class AuthService {
     return response;
   }
 
-  async googleLogin(user: any, context: any) {
-    let existingUser = await this.userService.findByEmail(user.email);
-    let token: string = '';
+async googleLogin(user: {
+  email: string;
+  name: string;
+  googleId: string;
+  avatar?: string;
+}) {
+  let existingUser = await this.userService.findByEmail(
+    user.email,
+  );
 
-    if (!existingUser) {
-      const createUserInput: CreateUserInput = {
-        email: user.email,
-        name: user.name,
-        authType: 'GOOGLE',
-        oAuth: {
-          googleId: user.googleId,
-        },
-        password: Math.random().toString(36).slice(-8), 
-      };
+  // Create account if first login
+  if (!existingUser) {
+    await this.userService.register({
+      email: user.email,
+      name: user.name,
+      password: Math.random()
+        .toString(36)
+        .slice(-8),
+      authType: 'GOOGLE',
 
-      const registerResponse = await this.userService.register(createUserInput);
-      existingUser = await this.userService.findByEmail(user.email);
+      oauth: {
+        googleId: user.googleId,
+      },
+    } as any);
 
-      if (existingUser) {
-        const payload = {
-          sub: existingUser._id.toString(),
-          email: existingUser.email,
-          role: existingUser.role,
-          isLogin: true,
-          authType: existingUser.authType,
-        };
-        token = this.jwtService.sign(payload);
-      }
-    } else {
-      const payload = {
-        sub: existingUser._id.toString(),
-        email: existingUser.email,
-        role: existingUser.role,
-        isLogin: true,
-        authType: existingUser.authType,
-      };
-      token = this.jwtService.sign(payload);
-    }
-
-    return {
-      token,
-      existingUser
-    };
+    existingUser =
+      await this.userService.findByEmail(
+        user.email,
+      );
   }
+
+  if (!existingUser) {
+    throw new UnauthorizedException(
+      'Unable to create Google user',
+    );
+  }
+
+  const payload = {
+    sub: existingUser._id.toString(),
+    email: existingUser.email,
+    role: existingUser.role,
+    authType: 'GOOGLE',
+    isLogin: true,
+  };
+
+  const token = this.jwtService.sign(payload);
+
+  return {
+    token,
+    user: {
+      id: existingUser._id,
+      email: existingUser.email,
+      name: existingUser.name,
+      role: existingUser.role,
+      authType: existingUser.authType,
+    },
+  };
+}
+
+  async linkedInLogin(user: any) {
+  let existingUser =
+    await this.userService.findByEmail(
+      user.email,
+    );
+
+  if (!existingUser) {
+    await this.userService.register({
+      email: user.email,
+      name: user.name,
+      authType: 'LINKEDIN',
+      password: Math.random()
+        .toString(36)
+        .slice(-8),
+
+      oAuth: {
+        linkedInId: user.linkedInId,
+      },
+    });
+
+    existingUser =
+      await this.userService.findByEmail(
+        user.email,
+      );
+  }
+
+  const payload = {
+    sub: existingUser!._id.toString(),
+    email: existingUser!.email,
+    role: existingUser!.role,
+    authType: 'LINKEDIN',
+  };
+
+  return {
+    token: this.jwtService.sign(payload),
+    user: existingUser,
+  };
+}
 }

@@ -86,6 +86,9 @@ importers:
       passport:
         specifier: ^0.7.0
         version: 0.7.0
+      passport-google-oauth20:
+        specifier: ^2.0.0
+        version: 2.0.0
       passport-jwt:
         specifier: ^4.0.1
         version: 4.0.1
@@ -156,6 +159,9 @@ importers:
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
+      '@types/passport-linkedin-oauth2':
+        specifier: ^1.5.6
+        version: 1.5.6
       '@types/pdf-parse':
         specifier: ^1.1.5
         version: 1.1.5
@@ -1806,6 +1812,9 @@ packages:
 
   '@types/passport-jwt@4.0.1':
     resolution: {integrity: sha512-Y0Ykz6nWP4jpxgEUYq8NoVZeCQPo1ZndJLfapI249g1jHChvRfZRO/LS3tqu26YgAS/laI1qx98sYGz0IalRXQ==}
+
+  '@types/passport-linkedin-oauth2@1.5.6':
+    resolution: {integrity: sha512-LlIwa+GGK8KoUHDxxwO2+5uqB6YmIHysqdLwpn+YJsjfmqFdAH+4YjhXO7riYwfYcpEr/pI+dSEDlwF0Xt+qhg==}
 
   '@types/passport-oauth2@1.8.0':
     resolution: {integrity: sha512-6//z+4orIOy/g3zx17HyQ71GSRK4bs7Sb+zFasRoc2xzlv7ZCJ+vkDBYFci8U6HY+or6Zy7ajf4mz4rK7nsWJQ==}
@@ -4094,6 +4103,10 @@ packages:
 
   pascal-case@3.1.2:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
+
+  passport-google-oauth20@2.0.0:
+    resolution: {integrity: sha512-KSk6IJ15RoxuGq7D1UKK/8qKhNfzbLeLrG3gkLZ7p4A6DBCcv7xpyQwuXtWdpyR0+E0mwkpjY1VfPOhxQrKzdQ==}
+    engines: {node: '>= 0.4.0'}
 
   passport-jwt@4.0.1:
     resolution: {integrity: sha512-UCKMDYhNuGOBE9/9Ycuoyh7vP6jpeTp/+sfMJl7nLff/t6dps+iaeE0hhNkKN8/HZHcJ7lCdOyDxHdDoxoSvdQ==}
@@ -7065,6 +7078,11 @@ snapshots:
       '@types/jsonwebtoken': 9.0.10
       '@types/passport-strategy': 0.2.38
 
+  '@types/passport-linkedin-oauth2@1.5.6':
+    dependencies:
+      '@types/express': 5.0.6
+      '@types/passport': 1.0.17
+
   '@types/passport-oauth2@1.8.0':
     dependencies:
       '@types/express': 5.0.6
@@ -9653,6 +9671,10 @@ snapshots:
     dependencies:
       no-case: 3.0.4
       tslib: 2.8.1
+
+  passport-google-oauth20@2.0.0:
+    dependencies:
+      passport-oauth2: 1.8.0
 
   passport-jwt@4.0.1:
     dependencies:

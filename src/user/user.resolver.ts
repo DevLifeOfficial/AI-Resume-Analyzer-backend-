@@ -42,14 +42,6 @@ export class UserResolver {
     return this.authService.login(input,context);
   }
 
-  @Get('google')
-  @UseGuards(AuthGuard('google'))
-  async googleAuth() {
-    // Initiates Google OAuth2 login flow
-    
-
-  }
-
   @Mutation('updateUser')
   @UseGuards(GqlAuthGuard)
   updateUser(

@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import * as Joi from 'joi';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ResumeModule } from './resume/resume.module';
@@ -106,6 +107,7 @@ const logger = new Logger('AppModule');
 
     UserModule,
     ResumeModule,
+    AuthModule
   ],
 
   providers: [
