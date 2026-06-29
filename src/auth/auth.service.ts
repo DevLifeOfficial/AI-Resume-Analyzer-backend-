@@ -47,7 +47,7 @@ export class AuthService {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    return { user: { id: user._id, email: user.email, role: user.role } };
+    return { user: { id: user._id,name:user.name, email: user.email, role: user.role } };
   }
   
 

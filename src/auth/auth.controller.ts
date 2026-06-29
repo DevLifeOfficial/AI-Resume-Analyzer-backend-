@@ -36,44 +36,7 @@ async googleCallback(
     },
   );
 
-  return res.json({
-    message: 'Google login successful',
-    user: result.user,
-  });
+  return res.redirect("/Home");
 }
 
-
-@Get('linkedin')
-@UseGuards(AuthGuard('linkedin'))
-linkedinAuth() {}
-
-
-@Get('linkedin/callback')
-@UseGuards(AuthGuard('linkedin'))
-async linkedinCallback(
-  @Req() req,
-  @Res() res,
-) {
-  const result =
-    await this.authService.linkedInLogin(
-      req.user,
-    );
-
-  res.cookie(
-    'access_token',
-    result.token,
-    {
-      httpOnly: true,
-      secure:
-        process.env.NODE_ENV ===
-        'production',
-      sameSite: 'lax',
-    },
-  );
-
-  return res.json({
-    message: 'LinkedIn login successful',
-    user: result.user,
-  });
-}
 }

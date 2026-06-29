@@ -9,8 +9,9 @@ import * as Joi from 'joi';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ResumeModule } from './resume/resume.module';
 import { GraphQLScalarType } from 'graphql';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { GqlThrottlerGuard } from './auth/guards/gql-throttler.guard';
 
 // Inline Upload scalar — no external package needed
 const GraphQLUpload = new GraphQLScalarType({
@@ -45,8 +46,6 @@ const logger = new Logger('AppModule');
         limit: 10,
       },
     ]),
-
-    
 
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -113,7 +112,7 @@ const logger = new Logger('AppModule');
   providers: [
   {
     provide: APP_GUARD,
-    useClass: ThrottlerGuard,
+    useClass: GqlThrottlerGuard,
   },
 ],
 })
