@@ -19,7 +19,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'https://ai-resume-analyzer-frontend-nu-ruby.vercel.app/Home',
+      configService.get<string>('FRONTEND_URL'),
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
