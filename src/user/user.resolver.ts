@@ -23,7 +23,9 @@ export class UserResolver {
   @Query('getCurrentUser')
    @UseGuards(GqlAuthGuard)
   getCurrentUser(@Context() context: any) {
-    return this.userService.getCurrentUser(context.req.user.id);
+     console.log("Cookies:", context.req.cookies);
+  console.log("User:", context.req.user);
+    return this.userService.getCurrentUser(context.req.user.userId);
   }
 
   @Query('getUserById')
@@ -40,6 +42,13 @@ export class UserResolver {
   @Mutation('login')
   async login(@Args('input') input: LoginUserInput, @Context() context: any) {
     return this.authService.login(input,context);
+  }
+
+  @Mutation('logout')
+  @UseGuards(GqlAuthGuard)
+  async logout(@Context() context: any) {
+    await this.authService.logout(context);
+    return true;
   }
 
   @Mutation('updateUser')

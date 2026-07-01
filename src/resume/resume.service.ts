@@ -9,6 +9,7 @@ import { Resume, ResumeDocument } from './resume.schema';
 import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ResumeService {
@@ -17,12 +18,13 @@ export class ResumeService {
   constructor(
     @InjectModel(Resume.name)
     private resumeModel: Model<ResumeDocument>,
+    private configService: ConfigService,
   ) {
-    if (!process.env.OPENAI_API_KEY) {
+    if (!this.configService.get('OPENAI_API_KEY')) {
       throw new Error('OPENAI_API_KEY missing');
     }
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: this.configService.get('OPENAI_API_KEY'),
     });
   }
 
@@ -44,19 +46,69 @@ export class ResumeService {
 
     const buffer = Buffer.from(fileBase64, 'base64');
 
+    // DEBUG: confirm what actually arrived server-side. Remove once the
+    // upload issue is resolved.
+    console.log('[ResumeService.create] received file', {
+      filename,
+      mimetype,
+      base64Length: fileBase64.length,
+      bufferLength: buffer.length,
+      header: buffer.subarray(0, 8).toString('ascii'),
+    });
+
     if (buffer.length > 5 * 1024 * 1024) {
       throw new BadRequestException('File too large');
+    }
+
+    if (buffer.length === 0) {
+      throw new BadRequestException(
+        'Received an empty file. The upload may have failed before reaching the server.',
+      );
     }
 
     let rawText = '';
 
     if (mimetype === 'application/pdf') {
-      const pdfParse = require('pdf-parse');
+      // A real PDF always starts with the literal bytes "%PDF-". If this
+      // check fails, the base64 payload was corrupted/truncated/malformed
+      // before it got here (frontend encoding bug, body-size limit, etc.)
+      // rather than a genuine "unparseable PDF" issue.
+      if (buffer.subarray(0, 5).toString('ascii') !== '%PDF-') {
+        console.error(
+          '[ResumeService.create] buffer does not start with %PDF- header',
+          { header: buffer.subarray(0, 20).toString('hex') },
+        );
+        throw new BadRequestException(
+          'The uploaded file does not look like a valid PDF (missing %PDF header). ' +
+            'This usually means the file data was corrupted or truncated before reaching the server — ' +
+            'check the fileBase64 value being sent from the client.',
+        );
+      }
+
+      const pdfParseModule = require('pdf-parse');
+      const pdfParse =
+        typeof pdfParseModule === 'function'
+          ? pdfParseModule
+          : pdfParseModule.default;
+
+      if (typeof pdfParse !== 'function') {
+        console.error(
+          '[ResumeService.create] pdf-parse module did not resolve to a function',
+          { keys: Object.keys(pdfParseModule) },
+        );
+        throw new BadRequestException(
+          'PDF parser is misconfigured on the server. Please contact support.',
+        );
+      }
+
       try {
         const data = await pdfParse(buffer);
         rawText = data.text;
-      } catch {
-        throw new BadRequestException('Invalid PDF');
+      } catch (err) {
+        console.error('[ResumeService.create] pdf-parse threw', err);
+        throw new BadRequestException(
+          'Could not parse this PDF. It may be encrypted, scanned/image-only, or corrupted.',
+        );
       }
     } else {
       const mammoth = await import('mammoth');
@@ -152,11 +204,14 @@ Provide the response in the following JSON format only, with no extra text:
   }
 
   async findOne(id: string, userId: string): Promise<ResumeDocument | null> {
-    return this.resumeModel.findById(id, null, { userId });
+    return this.resumeModel.findOne({ _id: id, userId });
   }
 
   async remove(id: string, userId: string): Promise<boolean> {
-    await this.resumeModel.findByIdAndDelete(id, { userId });
-    return true;
+    const result = await this.resumeModel.findOneAndDelete({
+      _id: id,
+      userId,
+    });
+    return !!result;
   }
 }
