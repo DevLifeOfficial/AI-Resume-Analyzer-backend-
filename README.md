@@ -1,98 +1,152 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+<div align="center">
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# ⚙️ AI Resume Analyzer — Backend
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+**NestJS + GraphQL API that reads, stores, and AI-analyzes resumes.**
 
-## Description
+Google OAuth login, JWT-secured GraphQL, MongoDB persistence, and OpenAI-powered ATS scoring.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+![NestJS](https://img.shields.io/badge/NestJS-GraphQL-e0234e?style=for-the-badge&logo=nestjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-gpt--4o-412991?style=for-the-badge&logo=openai&logoColor=white)
+![Status](https://img.shields.io/badge/status-active-brightgreen?style=for-the-badge)
 
-## Project setup
+</div>
 
-```bash
-$ pnpm install
+---
+
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [GraphQL Schema](#-graphql-schema)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Request Flow](#-request-flow)
+- [Known Limitations](#-known-limitations--notes-for-reviewers)
+- [Roadmap](#-roadmap)
+
+---
+
+## ✨ Features
+
+| | |
+|---|---|
+| 📤 **File ingestion** | Base64-encoded PDF/DOCX (5MB limit), text extracted via `pdf-parse` / `mammoth` |
+| 🤖 **AI analysis** | Resume text + optional job context sent to OpenAI (`gpt-4o`), returns structured ATS score, keywords, suggestions, strengths |
+| 🕓 **Persistent history** | Every analysis run appends to the resume's `analyses` array — nothing overwrites past runs |
+| 🔐 **Google OAuth login** | Users sign in with Google; the API issues its own JWT for GraphQL requests |
+| 🛡️ **Auth-scoped** | All mutations/queries run behind `GqlAuthGuard`, tied to the requesting user |
+
+## 🛠️ Tech Stack
+
+<div align="left">
+
+![NestJS](https://img.shields.io/badge/NestJS-Framework-e0234e?logo=nestjs&logoColor=white)
+![GraphQL](https://img.shields.io/badge/GraphQL-Schema--first-E10098?logo=graphql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-SDK-412991?logo=openai&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-Session_Auth-000000?logo=jsonwebtokens&logoColor=white)
+![Google OAuth](https://img.shields.io/badge/Google-OAuth_2.0-4285F4?logo=google&logoColor=white)
+
+</div>
+
+## 📁 Project Structure
+
+```
+resume/
+├── resume.module.ts     # Wires up Mongoose feature + providers
+├── resume.resolver.ts   # GraphQL resolver — auth-guarded mutations/queries
+├── resume.service.ts    # File parsing, OpenAI call, persistence
+├── resume.schema.ts     # Mongoose schema for Resume + embedded analyses
+└── resume.graphql       # SDL: types, inputs, Query, Mutation
 ```
 
-## Compile and run the project
+## 🔌 GraphQL Schema
 
-```bash
-# development
-$ pnpm run start
+```graphql
+type Mutation {
+  uploadResume(createResumeInput: CreateResumeInput!): Resume!
+  analyzeResume(analyzeResumeInput: AnalyzeResumeInput!): AnalysisResponse!
+  deleteResume(id: ID!): Boolean!
+}
 
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+type Query {
+  myResumes: [Resume!]!
+  resume(id: ID!): Resume
+}
 ```
 
-## Run tests
+See [`resume.graphql`](./resume.graphql) for the full SDL (types, inputs, scalars).
+
+## 🚀 Getting Started
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+pnpm install
+cp .env.example .env   # fill in the values below
+pnpm run start:dev
 ```
 
-## Deployment
+GraphQL Playground/Sandbox will be available at `http://localhost:{PORT}/graphql`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 🔑 Environment Variables
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```dotenv
+JWT_SECRET=
+JWT_EXPIRATION=7d
+OPENAI_API_KEY=
+NODE_ENV=
+PORT=5000
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+FRONTEND_URL=https://ai-resume-analyzer-frontend-nu-ruby.vercel.app
+
+# Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+| Variable | Description |
+|---|---|
+| `JWT_SECRET` | Signing secret for access tokens issued after login |
+| `JWT_EXPIRATION` | Token lifetime (e.g. `7d`) |
+| `OPENAI_API_KEY` | Required — `ResumeService` throws on startup if this is missing |
+| `NODE_ENV` | `development` / `production` — gates things like GraphQL Playground and error verbosity |
+| `PORT` | Port the Nest app listens on |
+| `FRONTEND_URL` | Deployed frontend origin — used for CORS and as the post-OAuth redirect target |
+| `GOOGLE_CLIENT_ID` | OAuth 2.0 client ID from Google Cloud Console |
+| `GOOGLE_CLIENT_SECRET` | OAuth 2.0 client secret |
+| `GOOGLE_CALLBACK_URL` | Must match the authorized redirect URI in Google Cloud Console |
 
-## Resources
+> **Not listed above but still needed:** a MongoDB connection string (e.g. `MONGODB_URI`) for Mongoose — add it here once you confirm the variable name you're using.
 
-Check out a few resources that may come in handy when working with NestJS:
+### Google OAuth flow
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Users authenticate via Google, and the API issues its own JWT (`JWT_SECRET` / `JWT_EXPIRATION`) on top of that for subsequent GraphQL requests — the same token `GqlAuthGuard` checks on every resume mutation/query. After a successful Google callback, the user is redirected back to `FRONTEND_URL`.
 
-## Support
+## 🔄 Request Flow
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. **`uploadResume`** — client sends `{ fileBase64, filename, mimetype }`. The service validates mimetype and size, extracts raw text, and saves a new `Resume` document scoped to `ctx.req.user.userId`.
+2. **`analyzeResume`** — client sends `{ resumeId, jobDescription? }`. The service loads `rawText`, builds a prompt, calls OpenAI, parses the JSON response, appends it to `resume.analyses`, and returns the result.
 
-## Stay in touch
+## ⚠️ Known Limitations / Notes for Reviewers
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `findOne` and `remove` currently pass `{ userId }` as the Mongoose *options* argument rather than filtering by it — a user could fetch/delete another user's resume by ID. Fix: `findOne({ _id: id, userId })`.
+- `AnalyzeResumeInput.jobDescription` is the only free-text context field — the frontend composes role/experience/focus into this single string.
+- No rate limiting on `analyzeResume` yet — each call is a paid OpenAI request.
 
-## License
+## 🗺️ Roadmap
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- [ ] Fix user-scoping on `findOne` / `remove`
+- [ ] Rate limit `analyzeResume` per user
+- [ ] Add `jobTitle` / `experienceLevel` as first-class input fields
+- [ ] Streaming analysis response for faster perceived latency
+
+---
+
+<div align="center">
+
+Built by [Ram](https://github.com/) · MIT License
+
+</div>
