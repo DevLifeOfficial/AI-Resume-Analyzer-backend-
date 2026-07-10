@@ -12,6 +12,67 @@ type User {
   usage: UsageInfo
   settings: UserSettings
   linkedInUrl: String
+
+  # Resume / profile data — all optional, filled in post-login
+  profileSummary: String
+  skills: [String!]
+  interests: [String!]
+  experience: [Experience!]
+  education: [Education!]
+  projects: [Project!]
+  certificates: [Certificate!]
+  socialLinks: SocialLinks
+}
+
+type Experience {
+  _id: ID
+  title: String!
+  company: String!
+  location: String
+  startDate: String
+  endDate: String
+  isCurrent: Boolean
+  description: String
+  skillsUsed: [String!]
+}
+
+type Education {
+  _id: ID
+  institution: String!
+  degree: String!
+  fieldOfStudy: String
+  startDate: String
+  endDate: String
+  grade: String
+  description: String
+}
+
+type Project {
+  _id: ID
+  title: String!
+  description: String
+  techStack: [String!]
+  projectUrl: String
+  repoUrl: String
+  startDate: String
+  endDate: String
+}
+
+type Certificate {
+  _id: ID
+  name: String!
+  issuingOrganization: String
+  issueDate: String
+  expiryDate: String
+  credentialId: String
+  credentialUrl: String
+}
+
+type SocialLinks {
+  github: String
+  portfolio: String
+  twitter: String
+  website: String
 }
 
 type OAuthInfo {
@@ -70,6 +131,73 @@ input UpdateUserInput {
     language: String
 }
 
+# ── Profile inputs ─────────────────────────────────────────────────────
+# Every field is optional: the profile page saves whatever the user has
+# filled in so far. Array fields (experience, education, projects,
+# certificates) are replaced wholesale when supplied, so the client should
+# send the full, current list for that section.
+
+input ExperienceInput {
+  title: String!
+  company: String!
+  location: String
+  startDate: String
+  endDate: String
+  isCurrent: Boolean
+  description: String
+  skillsUsed: [String!]
+}
+
+input EducationInput {
+  institution: String!
+  degree: String!
+  fieldOfStudy: String
+  startDate: String
+  endDate: String
+  grade: String
+  description: String
+}
+
+input ProjectInput {
+  title: String!
+  description: String
+  techStack: [String!]
+  projectUrl: String
+  repoUrl: String
+  startDate: String
+  endDate: String
+}
+
+input CertificateInput {
+  name: String!
+  issuingOrganization: String
+  issueDate: String
+  expiryDate: String
+  credentialId: String
+  credentialUrl: String
+}
+
+input SocialLinksInput {
+  github: String
+  portfolio: String
+  twitter: String
+  website: String
+}
+
+input UpdateProfileInput {
+  name: String
+  avatarUrl: String
+  profileSummary: String
+  skills: [String!]
+  interests: [String!]
+  experience: [ExperienceInput!]
+  education: [EducationInput!]
+  projects: [ProjectInput!]
+  certificates: [CertificateInput!]
+  socialLinks: SocialLinksInput
+  linkedInUrl: String
+}
+
 type Query {
  getUsers: [User!]!
  getCurrentUser: User!
@@ -83,9 +211,12 @@ type Query {
     login(input: LoginUserInput!): AuthResponse!
     logout: Boolean!
 
-    # User Management
+    # User Management (self or admin only — enforced in the resolver)
     updateUser(id: ID!, input: UpdateUserInput!): User!
     deleteUser(id: ID!): Boolean!
+
+    # Profile — always acts on the authenticated user, no id required
+    updateProfile(input: UpdateProfileInput!): User!
   }
 
 

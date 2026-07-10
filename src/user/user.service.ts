@@ -7,8 +7,10 @@ import {
   LoginUserInput,
   UpdateUserInput,
 } from 'src/generated/models';
+
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateProfileInput } from './dto/update-profile.input';
 
 @Injectable()
 export class UserService {
@@ -23,7 +25,6 @@ export class UserService {
   }> {
     const existingUser = await this.userModel.findOne({ email: input.email });
     if (existingUser) {
-      
       throw new BadRequestException('User with this email already exists');
     }
 
@@ -31,6 +32,9 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(input.password, 10);
 
     // Create user
+    // FIX: this key was previously `settings` but the schema property was
+    // named `setting` (typo) — Mongoose strict mode silently dropped it on
+    // save. The schema field is now `settings` so this matches.
     const user = await this.userModel.create({
       ...input,
       password: hashedPassword,
@@ -54,7 +58,6 @@ export class UserService {
     };
   }
 
-
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
@@ -77,6 +80,38 @@ export class UserService {
   ): Promise<UserDocument | null> {
     return this.userModel
       .findByIdAndUpdate(id, updateUserInput, { new: true })
+      .select('-password')
+      .exec();
+  }
+
+  /**
+   * Partial profile update: only the fields the client actually sent are
+   * touched. Array sections (experience/education/projects/certificates)
+   * are replaced wholesale when present — omit a section entirely to leave
+   * it untouched.
+   */
+  async updateProfile(
+    userId: string,
+    input: UpdateProfileInput,
+  ): Promise<UserDocument | null> {
+    const updateFields: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(input)) {
+      if (value !== undefined) {
+        updateFields[key] = value;
+      }
+    }
+
+    if (Object.keys(updateFields).length === 0) {
+      return this.findById(userId);
+    }
+
+    return this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { $set: updateFields },
+        { new: true, runValidators: true },
+      )
       .select('-password')
       .exec();
   }
