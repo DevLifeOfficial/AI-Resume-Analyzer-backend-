@@ -43,7 +43,9 @@ export class AuthService {
     context.res.cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none`',
+      sameSite: process.env.NODE_ENV === 'production'
+  ? 'none'
+  : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -112,42 +114,13 @@ export class AuthService {
     };
   }
 
-  async linkedInLogin(user: any) {
-    let existingUser = await this.userService.findByEmail(user.email);
-
-    if (!existingUser) {
-      await this.userService.register({
-        email: user.email,
-        name: user.name,
-        authType: 'LINKEDIN',
-        password: Math.random().toString(36).slice(-8),
-
-        oAuth: {
-          linkedInId: user.linkedInId,
-        },
-      });
-
-      existingUser = await this.userService.findByEmail(user.email);
-    }
-
-    const payload = {
-      sub: existingUser!._id.toString(),
-      email: existingUser!.email,
-      role: existingUser!.role,
-      authType: 'LINKEDIN',
-    };
-
-    return {
-      token: this.jwtService.sign(payload),
-      user: existingUser,
-    };
-  }
-
   async logout(context: any) {
     context.res.clearCookie('access_token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production'
+  ? 'none'
+  : 'lax',
     });
   }
 }

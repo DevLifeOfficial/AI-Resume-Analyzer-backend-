@@ -22,7 +22,9 @@ export class AuthController {
     res.cookie('access_token', result.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
+      sameSite: process.env.NODE_ENV === 'production'
+  ? 'none'
+  : 'lax',
     });
     console.log(
   "Redirecting to:",

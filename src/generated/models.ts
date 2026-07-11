@@ -49,6 +49,26 @@ export type AuthResponse = {
   user: DataResponse;
 };
 
+export type Certificate = {
+  __typename?: 'Certificate';
+  _id?: Maybe<Scalars['ID']['output']>;
+  credentialId?: Maybe<Scalars['String']['output']>;
+  credentialUrl?: Maybe<Scalars['String']['output']>;
+  expiryDate?: Maybe<Scalars['String']['output']>;
+  issueDate?: Maybe<Scalars['String']['output']>;
+  issuingOrganization?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+};
+
+export type CertificateInput = {
+  credentialId?: InputMaybe<Scalars['String']['input']>;
+  credentialUrl?: InputMaybe<Scalars['String']['input']>;
+  expiryDate?: InputMaybe<Scalars['String']['input']>;
+  issueDate?: InputMaybe<Scalars['String']['input']>;
+  issuingOrganization?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export type CreateResumeInput = {
   fileBase64: Scalars['String']['input'];
   filename: Scalars['String']['input'];
@@ -59,8 +79,52 @@ export type CreateUserInput = {
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
-  authType?: InputMaybe<Scalars['String']['input']>;
-  oAuth?: InputMaybe<OAuthInfo>;
+};
+
+export type Education = {
+  __typename?: 'Education';
+  _id?: Maybe<Scalars['ID']['output']>;
+  degree: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['String']['output']>;
+  fieldOfStudy?: Maybe<Scalars['String']['output']>;
+  grade?: Maybe<Scalars['String']['output']>;
+  institution: Scalars['String']['output'];
+  startDate?: Maybe<Scalars['String']['output']>;
+};
+
+export type EducationInput = {
+  degree: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  fieldOfStudy?: InputMaybe<Scalars['String']['input']>;
+  grade?: InputMaybe<Scalars['String']['input']>;
+  institution: Scalars['String']['input'];
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Experience = {
+  __typename?: 'Experience';
+  _id?: Maybe<Scalars['ID']['output']>;
+  company: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['String']['output']>;
+  isCurrent?: Maybe<Scalars['Boolean']['output']>;
+  location?: Maybe<Scalars['String']['output']>;
+  skillsUsed?: Maybe<Array<Scalars['String']['output']>>;
+  startDate?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type ExperienceInput = {
+  company: Scalars['String']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  isCurrent?: InputMaybe<Scalars['Boolean']['input']>;
+  location?: InputMaybe<Scalars['String']['input']>;
+  skillsUsed?: InputMaybe<Array<Scalars['String']['input']>>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
 };
 
 export type LoginUserInput = {
@@ -76,6 +140,7 @@ export type Mutation = {
   login: AuthResponse;
   logout: Scalars['Boolean']['output'];
   register: AuthResponse;
+  updateProfile: User;
   updateUser: User;
   uploadResume: Resume;
 };
@@ -106,6 +171,11 @@ export type MutationRegisterArgs = {
 };
 
 
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+};
+
+
 export type MutationUpdateUserArgs = {
   id: Scalars['ID']['input'];
   input: UpdateUserInput;
@@ -120,6 +190,28 @@ export type OAuthInfo = {
   __typename?: 'OAuthInfo';
   googleId?: Maybe<Scalars['String']['output']>;
   linkedInId?: Maybe<Scalars['String']['output']>;
+};
+
+export type Project = {
+  __typename?: 'Project';
+  _id?: Maybe<Scalars['ID']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  endDate?: Maybe<Scalars['String']['output']>;
+  projectUrl?: Maybe<Scalars['String']['output']>;
+  repoUrl?: Maybe<Scalars['String']['output']>;
+  startDate?: Maybe<Scalars['String']['output']>;
+  techStack?: Maybe<Array<Scalars['String']['output']>>;
+  title: Scalars['String']['output'];
+};
+
+export type ProjectInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  projectUrl?: InputMaybe<Scalars['String']['input']>;
+  repoUrl?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+  techStack?: InputMaybe<Array<Scalars['String']['input']>>;
+  title: Scalars['String']['input'];
 };
 
 export type Query = {
@@ -144,12 +236,27 @@ export type QueryResumeArgs = {
 export type Resume = {
   __typename?: 'Resume';
   _id: Scalars['ID']['output'];
-  analysisHistory: Array<AnalysisResult>;
+  analyses: Array<AnalysisResult>;
   createdAt: Scalars['DateTime']['output'];
   filename: Scalars['String']['output'];
   rawText: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userId: Scalars['ID']['output'];
+};
+
+export type SocialLinks = {
+  __typename?: 'SocialLinks';
+  github?: Maybe<Scalars['String']['output']>;
+  portfolio?: Maybe<Scalars['String']['output']>;
+  twitter?: Maybe<Scalars['String']['output']>;
+  website?: Maybe<Scalars['String']['output']>;
+};
+
+export type SocialLinksInput = {
+  github?: InputMaybe<Scalars['String']['input']>;
+  portfolio?: InputMaybe<Scalars['String']['input']>;
+  twitter?: InputMaybe<Scalars['String']['input']>;
+  website?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Subscription = {
@@ -170,6 +277,20 @@ export type SubscriptionInfo = {
   subscriptionId?: Maybe<Scalars['String']['output']>;
 };
 
+export type UpdateProfileInput = {
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  certificates?: InputMaybe<Array<CertificateInput>>;
+  education?: InputMaybe<Array<EducationInput>>;
+  experience?: InputMaybe<Array<ExperienceInput>>;
+  interests?: InputMaybe<Array<Scalars['String']['input']>>;
+  linkedInUrl?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  profileSummary?: InputMaybe<Scalars['String']['input']>;
+  projects?: InputMaybe<Array<ProjectInput>>;
+  skills?: InputMaybe<Array<Scalars['String']['input']>>;
+  socialLinks?: InputMaybe<SocialLinksInput>;
+};
+
 export type UpdateUserInput = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   darkMode?: InputMaybe<Scalars['Boolean']['input']>;
@@ -188,14 +309,24 @@ export type UsageInfo = {
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
+  authType?: Maybe<Scalars['String']['output']>;
   avatarUrl?: Maybe<Scalars['String']['output']>;
+  certificates?: Maybe<Array<Certificate>>;
+  education?: Maybe<Array<Education>>;
   email: Scalars['String']['output'];
+  experience?: Maybe<Array<Experience>>;
+  interests?: Maybe<Array<Scalars['String']['output']>>;
+  isLogin?: Maybe<Scalars['Boolean']['output']>;
   linkedInUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   oauth?: Maybe<OAuthInfo>;
   plan: Scalars['String']['output'];
+  profileSummary?: Maybe<Scalars['String']['output']>;
+  projects?: Maybe<Array<Project>>;
   role: Scalars['String']['output'];
   settings?: Maybe<UserSettings>;
+  skills?: Maybe<Array<Scalars['String']['output']>>;
+  socialLinks?: Maybe<SocialLinks>;
   subscription?: Maybe<SubscriptionInfo>;
   usage?: Maybe<UsageInfo>;
 };
@@ -294,9 +425,15 @@ export type ResolversTypes = {
   AnalyzeResumeInput: AnalyzeResumeInput;
   AuthResponse: ResolverTypeWrapper<AuthResponse>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Certificate: ResolverTypeWrapper<Certificate>;
+  CertificateInput: CertificateInput;
   CreateResumeInput: CreateResumeInput;
   CreateUserInput: CreateUserInput;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
+  Education: ResolverTypeWrapper<Education>;
+  EducationInput: EducationInput;
+  Experience: ResolverTypeWrapper<Experience>;
+  ExperienceInput: ExperienceInput;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -304,11 +441,16 @@ export type ResolversTypes = {
   LoginUserInput: LoginUserInput;
   Mutation: ResolverTypeWrapper<Record<PropertyKey, never>>;
   OAuthInfo: ResolverTypeWrapper<OAuthInfo>;
+  Project: ResolverTypeWrapper<Project>;
+  ProjectInput: ProjectInput;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   Resume: ResolverTypeWrapper<Resume>;
+  SocialLinks: ResolverTypeWrapper<SocialLinks>;
+  SocialLinksInput: SocialLinksInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   SubscriptionInfo: ResolverTypeWrapper<SubscriptionInfo>;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   UsageInfo: ResolverTypeWrapper<UsageInfo>;
@@ -324,9 +466,15 @@ export type ResolversParentTypes = {
   AnalyzeResumeInput: AnalyzeResumeInput;
   AuthResponse: AuthResponse;
   Boolean: Scalars['Boolean']['output'];
+  Certificate: Certificate;
+  CertificateInput: CertificateInput;
   CreateResumeInput: CreateResumeInput;
   CreateUserInput: CreateUserInput;
   DateTime: Scalars['DateTime']['output'];
+  Education: Education;
+  EducationInput: EducationInput;
+  Experience: Experience;
+  ExperienceInput: ExperienceInput;
   Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -334,11 +482,16 @@ export type ResolversParentTypes = {
   LoginUserInput: LoginUserInput;
   Mutation: Record<PropertyKey, never>;
   OAuthInfo: OAuthInfo;
+  Project: Project;
+  ProjectInput: ProjectInput;
   Query: Record<PropertyKey, never>;
   Resume: Resume;
+  SocialLinks: SocialLinks;
+  SocialLinksInput: SocialLinksInput;
   String: Scalars['String']['output'];
   Subscription: Record<PropertyKey, never>;
   SubscriptionInfo: SubscriptionInfo;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateUserInput: UpdateUserInput;
   Upload: Scalars['Upload']['output'];
   UsageInfo: UsageInfo;
@@ -369,9 +522,42 @@ export type AuthResponseResolvers<ContextType = any, ParentType extends Resolver
   user?: Resolver<ResolversTypes['dataResponse'], ParentType, ContextType>;
 };
 
+export type CertificateResolvers<ContextType = any, ParentType extends ResolversParentTypes['Certificate'] = ResolversParentTypes['Certificate']> = {
+  _id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  credentialId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  credentialUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  expiryDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  issueDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  issuingOrganization?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
+
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
   name: 'DateTime';
 }
+
+export type EducationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Education'] = ResolversParentTypes['Education']> = {
+  _id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  degree?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  fieldOfStudy?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  grade?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  institution?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type ExperienceResolvers<ContextType = any, ParentType extends ResolversParentTypes['Experience'] = ResolversParentTypes['Experience']> = {
+  _id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  company?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  isCurrent?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  skillsUsed?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+};
 
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
   name: 'JSON';
@@ -384,6 +570,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   register?: Resolver<ResolversTypes['AuthResponse'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  updateProfile?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateProfileArgs, 'input'>>;
   updateUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationUpdateUserArgs, 'id' | 'input'>>;
   uploadResume?: Resolver<ResolversTypes['Resume'], ParentType, ContextType, RequireFields<MutationUploadResumeArgs, 'createResumeInput'>>;
 };
@@ -391,6 +578,17 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type OAuthInfoResolvers<ContextType = any, ParentType extends ResolversParentTypes['OAuthInfo'] = ResolversParentTypes['OAuthInfo']> = {
   googleId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   linkedInId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+};
+
+export type ProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
+  _id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  endDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projectUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  repoUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  startDate?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  techStack?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
@@ -403,12 +601,19 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type ResumeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Resume'] = ResolversParentTypes['Resume']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  analysisHistory?: Resolver<Array<ResolversTypes['AnalysisResult']>, ParentType, ContextType>;
+  analyses?: Resolver<Array<ResolversTypes['AnalysisResult']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   filename?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   rawText?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+};
+
+export type SocialLinksResolvers<ContextType = any, ParentType extends ResolversParentTypes['SocialLinks'] = ResolversParentTypes['SocialLinks']> = {
+  github?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  portfolio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  twitter?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  website?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = {
@@ -435,14 +640,24 @@ export type UsageInfoResolvers<ContextType = any, ParentType extends ResolversPa
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   _id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  authType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   avatarUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  certificates?: Resolver<Maybe<Array<ResolversTypes['Certificate']>>, ParentType, ContextType>;
+  education?: Resolver<Maybe<Array<ResolversTypes['Education']>>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  experience?: Resolver<Maybe<Array<ResolversTypes['Experience']>>, ParentType, ContextType>;
+  interests?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  isLogin?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   linkedInUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   oauth?: Resolver<Maybe<ResolversTypes['OAuthInfo']>, ParentType, ContextType>;
   plan?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  profileSummary?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
   role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   settings?: Resolver<Maybe<ResolversTypes['UserSettings']>, ParentType, ContextType>;
+  skills?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  socialLinks?: Resolver<Maybe<ResolversTypes['SocialLinks']>, ParentType, ContextType>;
   subscription?: Resolver<Maybe<ResolversTypes['SubscriptionInfo']>, ParentType, ContextType>;
   usage?: Resolver<Maybe<ResolversTypes['UsageInfo']>, ParentType, ContextType>;
 };
@@ -465,12 +680,17 @@ export type Resolvers<ContextType = any> = {
   AnalysisResponse?: AnalysisResponseResolvers<ContextType>;
   AnalysisResult?: AnalysisResultResolvers<ContextType>;
   AuthResponse?: AuthResponseResolvers<ContextType>;
+  Certificate?: CertificateResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  Education?: EducationResolvers<ContextType>;
+  Experience?: ExperienceResolvers<ContextType>;
   JSON?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   OAuthInfo?: OAuthInfoResolvers<ContextType>;
+  Project?: ProjectResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Resume?: ResumeResolvers<ContextType>;
+  SocialLinks?: SocialLinksResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubscriptionInfo?: SubscriptionInfoResolvers<ContextType>;
   Upload?: GraphQLScalarType;
