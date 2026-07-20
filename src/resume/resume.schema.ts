@@ -9,8 +9,11 @@ export class Resume {
     @Prop({
         type: MongooseSchema.Types.ObjectId,
         ref: 'User',
-        required: true})
+        required: true,
+        index: true,
+    })
     userId!: string;
+
 
     @Prop({ required: true })
     filename!: string;
